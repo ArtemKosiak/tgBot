@@ -16,7 +16,7 @@ using myApi.Model;
 using System.Text.RegularExpressions;
 using System.Net.Http;
 using System.Threading;
-
+using tgBot.Constant;
 namespace tgBot
 {
     public class tgbot
@@ -156,13 +156,13 @@ namespace tgBot
                 string consolenextMonth = $"{nextMonth[6]}" + $"{nextMonth[7]}" + "." + $"{nextMonth[4]}" + $"{nextMonth[5]}" + "." + $"{nextMonth[0]}" + $"{nextMonth[1]}"
                     + $"{nextMonth[2]}" + $"{nextMonth[3]}";
 
-                var json = webClient.DownloadString($"https://localhost:44368/ExchangeRate{Date}/{valcode}");
+                var json = webClient.DownloadString($"{Constants.address}/ExchangeRate{Date}/{valcode}");
                 var result = JsonConvert.DeserializeObject<List<ExchangeDate>>(json);
 
-                var json1 = webClient.DownloadString($"https://localhost:44368/ExchangeRate{pastyearNextMonth}/{valcode}");
+                var json1 = webClient.DownloadString($"{Constants.address}/ExchangeRate{pastyearNextMonth}/{valcode}");
                 var result_pastyearTomorrow = JsonConvert.DeserializeObject<List<ExchangeDate>>(json1);
 
-                var json2 = webClient.DownloadString($"https://localhost:44368/ExchangeRate{pastyearToday}/{valcode}");
+                var json2 = webClient.DownloadString($"{Constants.address}/ExchangeRate{pastyearToday}/{valcode}");
                 var result_pastyearToday = JsonConvert.DeserializeObject<List<ExchangeDate>>(json2);
 
                 await botClient.SendTextMessageAsync(message.Chat.Id, $"Наступного місяця: {consolenextMonth }\n" +
@@ -174,7 +174,7 @@ namespace tgBot
             else if (message.Text == "Сьогодні")
             {
                 string Date = DateTime.Now.ToString("yyyyMMdd");
-                var json = webClient.DownloadString($"https://localhost:44368/ExchangeRate{Date}/{valcode}");
+                var json = webClient.DownloadString($"{Constants.address}/ExchangeRate{Date}/{valcode}");
                 var result = JsonConvert.DeserializeObject<List<ExchangeDate>>(json);
                 await botClient.SendTextMessageAsync(message.Chat.Id, $"Сьогодні: {result.FirstOrDefault().exchangedate}\n" +
                     $"Курс {result.FirstOrDefault().txt.ToLower()} до гривні становить:\n1 {result.FirstOrDefault().cc} = {result.FirstOrDefault().rate} UAH",
@@ -194,7 +194,7 @@ namespace tgBot
                 {
                     Date += dates[i];
                 }
-                var json = webClient.DownloadString($"https://localhost:44368/ExchangeRate{Date}/{valcode}");
+                var json = webClient.DownloadString($"{Constants.address}/ExchangeRate{Date}/{valcode}");
                 var result = JsonConvert.DeserializeObject<List<ExchangeDate>>(json);
                 if (result.FirstOrDefault().exchangedate != null)
                 {
@@ -241,7 +241,7 @@ namespace tgBot
             else if (message.ReplyToMessage != null && message.ReplyToMessage.Text.Contains("Введіть біржу"))
             {
                 newExchange = message.Text;
-                var json = webClient.DownloadString($"https://localhost:44368/ExchangeRateCrypt/{coin}/{newExchange}");
+                var json = webClient.DownloadString($"{Constants.address}/ExchangeRateCrypt/{coin}/{newExchange}");
                 var result = JsonConvert.DeserializeObject<CryptExchangeBurse>(json);
                 if (result.tickers.FirstOrDefault().market.identifier == newExchange.ToLower())
                 {
@@ -260,7 +260,7 @@ namespace tgBot
             else if (message.Text == "/add")
             {
                 string newExchangeBd = "";
-                var json1 = webClient.DownloadString($"https://localhost:44368/CryptBD{message.From.Id}");
+                var json1 = webClient.DownloadString($"{Constants.address}/CryptBD{message.From.Id}");
                 var result1 = JsonConvert.DeserializeObject<favmarket>(json1);
                 if (result1 != null)
                 {
@@ -290,14 +290,14 @@ namespace tgBot
                 };
                 var json2 = JsonConvert.SerializeObject(data);
                 var Data = new StringContent(json2, Encoding.UTF8, "application/json");
-                var url = "https://localhost:44368/CryptBD";
+                var url = $"{Constants.address}/CryptBD";
                 using var client = new HttpClient();
                 await client.PostAsync(url, Data);
                 await botClient.SendTextMessageAsync(message.Chat.Id, $"Біржу {newExchange} додано до обраних!", parseMode: ParseMode.Markdown);
             }
             else if (message.Text == "Обрані біржі")
             {
-                var json1 = webClient.DownloadString($"https://localhost:44368/CryptBD{message.From.Id}");
+                var json1 = webClient.DownloadString($"{Constants.address}/CryptBD{message.From.Id}");
                 var result1 = JsonConvert.DeserializeObject<favmarket>(json1);
                 if (result1 != null)
                 {
@@ -314,7 +314,7 @@ namespace tgBot
             }
             else if (message.Text == "/deleteall")
             {
-                var result = $"https://localhost:44368/CryptBD{message.From.Id}";
+                var result = $"{Constants.address}/CryptBD{message.From.Id}";
                 using var client = new HttpClient();
                 await client.DeleteAsync(result);
                 await botClient.SendTextMessageAsync(message.Chat.Id, $"Видалено ваші обрані біржі!", parseMode: ParseMode.Markdown);
@@ -322,7 +322,7 @@ namespace tgBot
             else if (message.Text == "/delete")
             {
                 string deleteExchange = newExchange;
-                var json = webClient.DownloadString($"https://localhost:44368/CryptBD{message.From.Id}");
+                var json = webClient.DownloadString($"{Constants.address}/CryptBD{message.From.Id}");
                 var result = JsonConvert.DeserializeObject<favmarket>(json);
                 using var client = new HttpClient();
                 if (result != null && newExchange != null && result.Exchange.Contains(newExchange) == true)
@@ -331,7 +331,7 @@ namespace tgBot
                     string[] exchanges = newExchange.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
                     if (exchanges.Length == 0)
                     {
-                        var result1 = $"https://localhost:44368/CryptBD{message.From.Id}";
+                        var result1 = $"{Constants.address}/CryptBD{message.From.Id}";
 
                         await client.DeleteAsync(result1);
                         return;
@@ -351,7 +351,7 @@ namespace tgBot
                     };
                     var json2 = JsonConvert.SerializeObject(data);
                     var Data = new StringContent(json2, Encoding.UTF8, "application/json");
-                    var url = "https://localhost:44368/CryptBD";
+                    var url = $"{Constants.address}/CryptBD";
                     await client.PostAsync(url, Data);
                     await botClient.SendTextMessageAsync(message.Chat.Id, $"Видалено біржу {deleteExchange} з ваших обраних", parseMode: ParseMode.Markdown);
                 }
