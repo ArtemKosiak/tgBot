@@ -19,7 +19,7 @@ using System.Threading;
 using tgBot.Constant;
 namespace tgBot
 {
-    public class tgbot
+    public class telegBot
     {
         WebClient webClient = new WebClient();
         TelegramBotClient botClient = new TelegramBotClient("5452166004:AAGeonDHUNyHoGLdX1ecWFSs-ft6dn3sY5I");
@@ -234,7 +234,7 @@ namespace tgBot
                 return;
             }
 
-            else if (message.Text == "Ввести біржу:")
+            else if (message.Text == "Ввести біржу")
             {
                 await botClient.SendTextMessageAsync(message.Chat.Id, "Введіть біржу", replyMarkup: new ForceReplyMarkup { Selective = true });
             }
@@ -334,6 +334,7 @@ namespace tgBot
                         var result1 = $"{Constants.address}/CryptBD{message.From.Id}";
 
                         await client.DeleteAsync(result1);
+                        await botClient.SendTextMessageAsync(message.Chat.Id, $"Видалено біржу {deleteExchange} з ваших обраних", parseMode: ParseMode.Markdown);
                         return;
                     }
                     string resultExchange = null;

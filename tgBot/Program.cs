@@ -12,7 +12,7 @@ namespace tgBot
     {
         public static void Main(string[] args)
         {
-            tgbot tgBot = new tgbot();
+            telegBot tgBot = new telegBot();
             tgBot.Start();
             CreateHostBuilder(args).Build().Run();
         }
